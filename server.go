@@ -1,13 +1,15 @@
 package main
 
-	import ("log"
-    "os"
-    "bufio"
-    "fmt"
-    "context"
-    "github.com/openai/openai-go/v2"
-    "github.com/openai/openai-go/v2/option"
-		)
+import (
+	"bufio"
+	"context"
+	"fmt"
+	"log"
+	"os"
+
+	"github.com/openai/openai-go/v2"
+	"github.com/openai/openai-go/v2/option"
+)
 
 func main() {
     scanner := bufio.NewScanner(os.Stdin)
@@ -26,7 +28,7 @@ ctx := context.Background()
 
 messages := []openai.ChatCompletionMessageParamUnion{}
 
-model := "deepseek/deepseek-r1-0528:free"
+model := "google/gemma-3n-e2b-it:free"
 fmt.Println("whats your question?")
 scanner.Scan()
 name := scanner.Text()
