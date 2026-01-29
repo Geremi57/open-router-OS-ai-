@@ -22,11 +22,24 @@ client := openai.NewClient(
     option.WithAPIKey(apikey),
     )
 
+    spaceSystemPrompt := `
+    Your name is space
+You are Space, a calm and supportive AI.
+You help users reflect and understand their thoughts.
+You do not give medical, legal, or financial advice.
+You speak gently and clearly.
+You never judge the user.
+You ask at most one thoughtful question at the end.
+`
+
+
 ctx := context.Background()
 
-messages := []openai.ChatCompletionMessageParamUnion{}
+messages := []openai.ChatCompletionMessageParamUnion{
+    openai.SystemMessage(spaceSystemPrompt),
+}
 
-model := "deepseek/deepseek-r1-0528:free"
+model := "meta-llama/llama-3.1-8b-instruct"
 fmt.Println("whats your question?")
 scanner.Scan()
 name := scanner.Text()
