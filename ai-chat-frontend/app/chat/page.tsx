@@ -23,11 +23,12 @@ export default function ChatPage() {
     setLoading(true)
 
     try {
-      const res = await fetch('/api/chat', {
+      const res = await fetch("http://localhost:8080/chat", {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: input }),
+        body: JSON.stringify({ input: input }),
       })
+      // console.log(message)
       const data = await res.json()
 
       // Add AI response
