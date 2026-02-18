@@ -1,15 +1,18 @@
 package main
 
-	import ("log"
-    "context"
-    "encoding/json"
-    "net/http"
-    "os"
-    // "bufio"
-    "fmt"
-    "github.com/openai/openai-go/v2"
-    "github.com/openai/openai-go/v2/option"
-		)
+import (
+	"context"
+	"encoding/json"
+	"fmt"
+	"log"
+	"net/http"
+	"os"
+
+	// "bufio"
+
+	"github.com/openai/openai-go/v2"
+	"github.com/openai/openai-go/v2/option"
+)
 
 type Request struct {
     Template string `json:"template"`
@@ -42,21 +45,33 @@ client := openai.NewClient(
     You never judge the user.
     You ask at most one thoughtful question at the end.
     `
-
+    
+    // your existing handler logic here
+    
+    
+    
     http.HandleFunc("/chat", func(w http.ResponseWriter, r *http.Request) {
+    w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
+            w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+            w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+        
+            if r.Method == http.MethodOptions {
+                return
+            }
         if r.Method != http.MethodPost {
             http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
             return
         }
-
+        
         var req Request
+    
         json.NewDecoder(r.Body).Decode(&req)
 
         messages := []openai.ChatCompletionMessageParamUnion{
             openai.SystemMessage(spaceSystemPrompt),
+            openai.UserMessage(req.Input),
         }
         model := "meta-llama/llama-3.1-8b-instruct"
-        fmt.Println("whats your question?")
         // scanner.Scan()
         // name := scanner.Text()
         // messages = append(messages, openai.UserMessage(name))
@@ -72,11 +87,15 @@ client := openai.NewClient(
             http.Error(w, err.Error(), 500)
         }
 
-        json.NewEncoder(w).Encode(Response{
-            Output: res.Choices[0].Message.Content,
-        })
-    })
+        json.NewEncoder(w).Encode(map[string]string{
+    "reply": res.Choices[0].Message.Content,
+})
 
+        fmt.Println("what the question")
+})
+    
+
+// http.HandleFunc("/chat", handler)
     log.Println("Server running on :8080")
     log.Fatal(http.ListenAndServe(":8080", nil))
 
