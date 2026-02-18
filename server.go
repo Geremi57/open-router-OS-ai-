@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -50,7 +51,7 @@ client := openai.NewClient(
     
     
     http.HandleFunc("/chat", func(w http.ResponseWriter, r *http.Request) {
-            w.Header().Set("Access-Control-Allow-Origin", "http://localhost:4200")
+    w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
             w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
             w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
         
@@ -86,9 +87,11 @@ client := openai.NewClient(
             http.Error(w, err.Error(), 500)
         }
 
-        json.NewEncoder(w).Encode(Response{
-            Output: res.Choices[0].Message.Content,
-        })
+        json.NewEncoder(w).Encode(map[string]string{
+    "reply": res.Choices[0].Message.Content,
+})
+
+        fmt.Println("what the question")
 })
     
 
