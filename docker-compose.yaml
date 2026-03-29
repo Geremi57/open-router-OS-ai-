@@ -1,0 +1,51 @@
+version: '3.8'
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: space_user
+      POSTGRES_PASSWORD: space_pass
+      POSTGRES_DB: space_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./setup_db.sql:/docker-entrypoint-initdb.d/setup_db.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U space_user -d space_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - spacenet
+
+  space-backend:
+    build: .
+    environment:
+      DATABASE_URL: postgresql://space_user:space_pass@postgres:5432/space_db?sslmode=disable
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY}
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - spacenet
+
+  frontend:
+    build:
+      context: ./ai-chat-frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - VITE_API_URL=http://localhost:8080
+    depends_on:
+      - space-backend
+    networks:
+      - spacenet
+
+volumes:
+  postgres_data:
+
+networks:
+  spacenet:
+    driver: bridge
