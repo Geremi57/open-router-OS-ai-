@@ -447,8 +447,14 @@ func chatHandler(w http.ResponseWriter, r *http.Request) {
 		option.WithAPIKey(apikey),
 	)
 	
+	model := os.Getenv("MODEL")
+	if model == "" {
+		log.Println("model not set")
+		http.Error(w, "model not configured", 500)
+		return
+	}
 	params := openai.ChatCompletionNewParams{
-		Model:    "z-ai/glm-4.5-air:free",
+		Model:    model,
 		Messages: messages,
 	}
 	
