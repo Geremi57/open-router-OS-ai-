@@ -448,7 +448,7 @@ func chatHandler(w http.ResponseWriter, r *http.Request) {
 	)
 	
 	params := openai.ChatCompletionNewParams{
-		Model:    "stepfun/step-3.5-flash:free",
+		Model:    "z-ai/glm-4.5-air:free",
 		Messages: messages,
 	}
 	
